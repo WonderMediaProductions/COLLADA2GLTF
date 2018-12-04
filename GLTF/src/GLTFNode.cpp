@@ -246,7 +246,8 @@ GLTF::Object* GLTF::Node::clone(GLTF::Object* clone) {
 }
 
 void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	
 	if (mesh != NULL) {
 		if (options->version == "1.0") {
@@ -357,5 +358,4 @@ void GLTF::Node::writeJSON(void* writer, GLTF::Options* options) {
 			jsonWriter->Int(camera->id);
 		}
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

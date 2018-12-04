@@ -24,7 +24,8 @@ GLTF::Object* GLTF::Mesh::clone(GLTF::Object* clone) {
 }
 
 void GLTF::Mesh::writeJSON(void* writer, GLTF::Options* options) {
-	auto* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
+    GLTF::Object::writeJSON(writer, options);
+    auto* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
 	jsonWriter->Key("primitives");
 	jsonWriter->StartArray();
 	for (GLTF::Primitive* primitive : this->primitives) {
@@ -41,5 +42,4 @@ void GLTF::Mesh::writeJSON(void* writer, GLTF::Options* options) {
 		}
 		jsonWriter->EndArray();
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

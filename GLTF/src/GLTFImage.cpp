@@ -114,7 +114,8 @@ std::string GLTF::Image::typeName() {
 }
 
 void GLTF::Image::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	if (options->embeddedTextures && data != NULL) {
 		if (!options->binary) {
@@ -151,5 +152,4 @@ void GLTF::Image::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->Key("uri");
 		jsonWriter->String(uri.c_str());
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

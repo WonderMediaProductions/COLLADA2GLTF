@@ -8,7 +8,8 @@ std::string GLTF::Scene::typeName() {
 }
 
 void GLTF::Scene::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	jsonWriter->Key("nodes");
 	jsonWriter->StartArray();
 	for (GLTF::Node* node : this->nodes) {
@@ -20,5 +21,4 @@ void GLTF::Scene::writeJSON(void* writer, GLTF::Options* options) {
 		}
 	}
 	jsonWriter->EndArray();
-	GLTF::Object::writeJSON(writer, options);
 }

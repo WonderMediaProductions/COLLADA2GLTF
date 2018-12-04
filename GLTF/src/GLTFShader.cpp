@@ -12,7 +12,8 @@ std::string GLTF::Shader::typeName() {
 }
 
 void GLTF::Shader::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	jsonWriter->Key("type");
 	jsonWriter->Int((int)type);
@@ -24,5 +25,4 @@ void GLTF::Shader::writeJSON(void* writer, GLTF::Options* options) {
 		uri = options->name + std::to_string(id) + (type == GLTF::Constants::WebGL::VERTEX_SHADER ? ".vert" : ".frag");
 	}
 	jsonWriter->String(uri.c_str());
-	GLTF::Object::writeJSON(writer, options);
 }

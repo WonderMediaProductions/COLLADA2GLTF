@@ -8,7 +8,8 @@ std::string GLTF::Sampler::typeName() {
 }
 
 void GLTF::Sampler::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	jsonWriter->Key("magFilter");
 	jsonWriter->Int((int)magFilter);
 	jsonWriter->Key("minFilter");
@@ -17,5 +18,4 @@ void GLTF::Sampler::writeJSON(void* writer, GLTF::Options* options) {
 	jsonWriter->Int((int)wrapS);
 	jsonWriter->Key("wrapT");
 	jsonWriter->Int((int)wrapT);
-	GLTF::Object::writeJSON(writer, options);
 }
