@@ -8,7 +8,8 @@ std::string GLTF::Program::typeName() {
 }
 
 void GLTF::Program::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	jsonWriter->Key("attributes");
 	jsonWriter->StartArray();
@@ -35,5 +36,4 @@ void GLTF::Program::writeJSON(void* writer, GLTF::Options* options) {
 			jsonWriter->Int(vertexShader->id);
 		}
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

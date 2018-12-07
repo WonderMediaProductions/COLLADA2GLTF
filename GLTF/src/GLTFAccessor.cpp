@@ -250,6 +250,7 @@ std::string GLTF::Accessor::typeName() {
 }
 
 void GLTF::Accessor::writeJSON(void* writer, GLTF::Options* options) {
+    GLTF::Object::writeJSON(writer, options);
 	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (this->bufferView) {
 		jsonWriter->Key("bufferView");
