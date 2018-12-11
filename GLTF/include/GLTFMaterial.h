@@ -49,12 +49,23 @@ namespace GLTF {
 	public: 
 		class Texture : public GLTF::Object {
 		public:
-			float scale = 1;
 			GLTF::Texture* texture = NULL;
 			int texCoord = -1;
 
-			void writeJSON(void* writer, GLTF::Options* options);
+			void writeJSON(void* writer, GLTF::Options* options) override;
 		};
+
+	    class OcclusionTexture : public Texture {
+        public:
+            float strength = 1;
+            void writeJSON(void* writer, GLTF::Options* options) override;
+        };
+
+	    class NormalTexture : public Texture {
+        public:
+            float scale = 1;
+            void writeJSON(void* writer, GLTF::Options* options) override;
+        };
 
 		class MetallicRoughness : public GLTF::Object {
 		public:
@@ -79,8 +90,8 @@ namespace GLTF {
 		};
 
 		MetallicRoughness* metallicRoughness = NULL;
-		Texture* normalTexture = NULL;
-		Texture* occlusionTexture = NULL;
+		NormalTexture* normalTexture = NULL;
+		OcclusionTexture* occlusionTexture = NULL;
 		float* emissiveFactor = NULL;
 		Texture* emissiveTexture = NULL;
 		SpecularGlossiness* specularGlossiness = NULL;

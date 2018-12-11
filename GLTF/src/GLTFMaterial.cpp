@@ -139,11 +139,9 @@ void GLTF::Material::writeJSON(void* writer, GLTF::Options* options) {
 }
 
 void GLTF::MaterialPBR::Texture::writeJSON(void* writer, GLTF::Options* options) {
+    Object::writeJSON(writer, options);
+
 	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
-	if (scale != 1) {
-		jsonWriter->Key("scale");
-		jsonWriter->Double(scale);
-	}
 	if (texture) {
 		jsonWriter->Key("index");
 		jsonWriter->Int(texture->id);
@@ -152,6 +150,30 @@ void GLTF::MaterialPBR::Texture::writeJSON(void* writer, GLTF::Options* options)
 		jsonWriter->Key("texCoord");
 		jsonWriter->Int(texCoord);
 	}
+}
+
+void GLTF::MaterialPBR::OcclusionTexture::writeJSON(void* writer, GLTF::Options* options)
+{
+    Texture::writeJSON(writer, options);
+
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
+
+    if (strength != 1 ) {
+        jsonWriter->Key("strength");
+        jsonWriter->Double(strength);
+    }
+}
+
+void GLTF::MaterialPBR::NormalTexture::writeJSON(void* writer, GLTF::Options* options)
+{
+    Texture::writeJSON(writer, options);
+
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
+
+    if (scale != 1) {
+        jsonWriter->Key("scale");
+        jsonWriter->Double(scale);
+    }
 }
 
 void GLTF::MaterialPBR::MetallicRoughness::writeJSON(void* writer, GLTF::Options* options) {
@@ -883,7 +905,7 @@ GLTF::MaterialPBR* GLTF::MaterialCommon::getMaterialPBR(GLTF::Options* options) 
 	}
 
 	if (values->ambientTexture) {
-		GLTF::MaterialPBR::Texture* texture = new GLTF::MaterialPBR::Texture();
+	    auto texture = new GLTF::MaterialPBR::OcclusionTexture();
 		texture->texture = values->ambientTexture;
 		material->occlusionTexture = texture;
 	}
@@ -908,7 +930,7 @@ GLTF::MaterialPBR* GLTF::MaterialCommon::getMaterialPBR(GLTF::Options* options) 
 	}
 
 	if (values->bumpTexture) {
-		GLTF::MaterialPBR::Texture* texture = new GLTF::MaterialPBR::Texture();
+	    auto texture = new GLTF::MaterialPBR::NormalTexture();
 		texture->texture = values->bumpTexture;
 		material->normalTexture = texture;
 	}
