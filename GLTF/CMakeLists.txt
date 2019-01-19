@@ -30,6 +30,9 @@ file(GLOB SOURCES "src/*.cpp")
 add_library(GLTF ${HEADERS} ${SOURCES})
 target_link_libraries(${PROJECT_NAME} draco)
 
+install(TARGETS GLTF DESTINATION lib)
+install(DIRECTORY include DESTINATION include/GLTF)
+
 if (test)
   enable_testing()
 
@@ -49,3 +52,4 @@ if (test)
 
   add_test(GLTFTest ${PROJECT_NAME}-test)
 endif()
+
