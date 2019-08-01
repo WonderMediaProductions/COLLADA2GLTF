@@ -9,7 +9,8 @@ std::string GLTF::Skin::typeName() {
 }
 
 void GLTF::Skin::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	if (inverseBindMatrices != NULL) {
 		jsonWriter->Key("inverseBindMatrices");
@@ -42,5 +43,4 @@ void GLTF::Skin::writeJSON(void* writer, GLTF::Options* options) {
 		}
 	}
 	jsonWriter->EndArray();
-	GLTF::Object::writeJSON(writer, options);
 }

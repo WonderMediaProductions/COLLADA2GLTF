@@ -119,7 +119,8 @@ void GLTF::Material::Values::writeJSON(void* writer, GLTF::Options* options) {
 }
 
 void GLTF::Material::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (this->values) {
 		jsonWriter->Key("values");
 		jsonWriter->StartObject();
@@ -135,15 +136,12 @@ void GLTF::Material::writeJSON(void* writer, GLTF::Options* options) {
 			jsonWriter->Int(technique->id);
 		}
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 void GLTF::MaterialPBR::Texture::writeJSON(void* writer, GLTF::Options* options) {
+    Object::writeJSON(writer, options);
+
 	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
-	if (scale != 1) {
-		jsonWriter->Key("scale");
-		jsonWriter->Double(scale);
-	}
 	if (texture) {
 		jsonWriter->Key("index");
 		jsonWriter->Int(texture->id);
@@ -152,11 +150,35 @@ void GLTF::MaterialPBR::Texture::writeJSON(void* writer, GLTF::Options* options)
 		jsonWriter->Key("texCoord");
 		jsonWriter->Int(texCoord);
 	}
-	GLTF::Object::writeJSON(writer, options);
+}
+
+void GLTF::MaterialPBR::OcclusionTexture::writeJSON(void* writer, GLTF::Options* options)
+{
+    Texture::writeJSON(writer, options);
+
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
+
+    if (strength != 1 ) {
+        jsonWriter->Key("strength");
+        jsonWriter->Double(strength);
+    }
+}
+
+void GLTF::MaterialPBR::NormalTexture::writeJSON(void* writer, GLTF::Options* options)
+{
+    Texture::writeJSON(writer, options);
+
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
+
+    if (scale != 1) {
+        jsonWriter->Key("scale");
+        jsonWriter->Double(scale);
+    }
 }
 
 void GLTF::MaterialPBR::MetallicRoughness::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (baseColorFactor) {
 		jsonWriter->Key("baseColorFactor");
 		jsonWriter->StartArray();
@@ -185,11 +207,11 @@ void GLTF::MaterialPBR::MetallicRoughness::writeJSON(void* writer, GLTF::Options
 		metallicRoughnessTexture->writeJSON(writer, options);
 		jsonWriter->EndObject();
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 void GLTF::MaterialPBR::SpecularGlossiness::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (diffuseFactor) {
 		jsonWriter->Key("diffuseFactor");
 		jsonWriter->StartArray();
@@ -222,11 +244,11 @@ void GLTF::MaterialPBR::SpecularGlossiness::writeJSON(void* writer, GLTF::Option
 		specularGlossinessTexture->writeJSON(writer, options);
 		jsonWriter->EndObject();
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 void GLTF::MaterialPBR::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (metallicRoughness) {
 		jsonWriter->Key("pbrMetallicRoughness");
 		jsonWriter->StartObject();
@@ -283,8 +305,6 @@ void GLTF::MaterialPBR::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->Key("doubleSided");
 		jsonWriter->Bool(true);
 	}
-
-	GLTF::Object::writeJSON(writer, options);
 }
 
 std::string GLTF::MaterialCommon::Light::typeName() {
@@ -292,7 +312,8 @@ std::string GLTF::MaterialCommon::Light::typeName() {
 }
 
 void GLTF::MaterialCommon::Light::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (type != MaterialCommon::Light::UNKOWN) {
 		switch (type) {
 		case MaterialCommon::Light::DIRECTIONAL:
@@ -328,7 +349,6 @@ void GLTF::MaterialCommon::Light::writeJSON(void* writer, GLTF::Options* options
 		jsonWriter->EndArray();
 		jsonWriter->EndObject();
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 GLTF::MaterialCommon::MaterialCommon() {
@@ -885,7 +905,7 @@ GLTF::MaterialPBR* GLTF::MaterialCommon::getMaterialPBR(GLTF::Options* options) 
 	}
 
 	if (values->ambientTexture) {
-		GLTF::MaterialPBR::Texture* texture = new GLTF::MaterialPBR::Texture();
+	    auto texture = new GLTF::MaterialPBR::OcclusionTexture();
 		texture->texture = values->ambientTexture;
 		material->occlusionTexture = texture;
 	}
@@ -910,7 +930,7 @@ GLTF::MaterialPBR* GLTF::MaterialCommon::getMaterialPBR(GLTF::Options* options) 
 	}
 
 	if (values->bumpTexture) {
-		GLTF::MaterialPBR::Texture* texture = new GLTF::MaterialPBR::Texture();
+	    auto texture = new GLTF::MaterialPBR::NormalTexture();
 		texture->texture = values->bumpTexture;
 		material->normalTexture = texture;
 	}
@@ -923,7 +943,8 @@ GLTF::MaterialPBR* GLTF::MaterialCommon::getMaterialPBR(GLTF::Options* options) 
 }
 
 void GLTF::MaterialCommon::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	jsonWriter->Key("extensions");
 	jsonWriter->StartObject();
 	jsonWriter->Key("KHR_materials_common");
@@ -943,5 +964,4 @@ void GLTF::MaterialCommon::writeJSON(void* writer, GLTF::Options* options) {
 	GLTF::Material::writeJSON(writer, options);
 	jsonWriter->EndObject();
 	jsonWriter->EndObject();
-	GLTF::Object::writeJSON(writer, options);
 }

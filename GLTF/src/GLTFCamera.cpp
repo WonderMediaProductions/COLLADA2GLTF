@@ -8,7 +8,8 @@ std::string GLTF::Camera::typeName() {
 }
 
 void GLTF::Camera::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	if (type != Type::UNKNOWN) {
 		jsonWriter->Key("type");
@@ -19,7 +20,6 @@ void GLTF::Camera::writeJSON(void* writer, GLTF::Options* options) {
 			jsonWriter->String("orthographic");
 		}
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 void GLTF::CameraOrthographic::writeJSON(void* writer, GLTF::Options* options) {

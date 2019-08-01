@@ -8,7 +8,8 @@ std::string GLTF::Texture::typeName() {
 }
 
 void GLTF::Texture::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (options->version == "1.0") {
 		jsonWriter->Key("format");
 		jsonWriter->Int((int)GLTF::Constants::WebGL::RGBA);
@@ -33,5 +34,4 @@ void GLTF::Texture::writeJSON(void* writer, GLTF::Options* options) {
 	else {
 		jsonWriter->Int(source->id);
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

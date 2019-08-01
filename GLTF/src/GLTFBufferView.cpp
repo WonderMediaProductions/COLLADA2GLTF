@@ -24,7 +24,9 @@ std::string GLTF::BufferView::typeName() {
 }
 
 void GLTF::BufferView::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (this->buffer) {
 		jsonWriter->Key("buffer");
 		if (options->version == "1.0") {

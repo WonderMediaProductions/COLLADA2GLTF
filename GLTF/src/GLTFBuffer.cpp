@@ -14,6 +14,8 @@ std::string GLTF::Buffer::typeName() {
 }
 
 void GLTF::Buffer::writeJSON(void* writer, GLTF::Options* options) {
+    GLTF::Object::writeJSON(writer, options);
+    
 	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	jsonWriter->Key("byteLength");
 	jsonWriter->Int(this->byteLength);
@@ -22,10 +24,9 @@ void GLTF::Buffer::writeJSON(void* writer, GLTF::Options* options) {
 		if (options->embeddedBuffers) {
 			uri = "data:application/octet-stream;base64," + std::string(Base64::encode(this->data, this->byteLength));
 		}
-		else {
+		else if (uri.empty()) {
 			uri = options->name + std::to_string(id) + ".bin";
 		}
 		jsonWriter->String(uri.c_str());
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

@@ -8,7 +8,8 @@ std::string GLTF::Technique::typeName() {
 }
 
 void GLTF::Technique::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	jsonWriter->Key("attributes");
 	jsonWriter->StartObject();
@@ -117,5 +118,4 @@ void GLTF::Technique::writeJSON(void* writer, GLTF::Options* options) {
 		}
 		jsonWriter->EndObject();
 	}
-	GLTF::Object::writeJSON(writer, options);
 }

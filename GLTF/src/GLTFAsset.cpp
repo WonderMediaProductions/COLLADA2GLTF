@@ -16,7 +16,8 @@ GLTF::Asset::Asset() {
 }
 
 void GLTF::Asset::Metadata::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	if (options->version != "") {
 		version = options->version;
 	}
@@ -43,7 +44,6 @@ void GLTF::Asset::Metadata::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->Key("version");
 		jsonWriter->String(version.c_str());
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 GLTF::Scene* GLTF::Asset::getDefaultScene() {
@@ -700,11 +700,17 @@ void GLTF::Asset::useExtension(std::string extension) {
 }
 
 void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	if (options->binary && options->version == "1.0") {
 		useExtension("KHR_binary_glTF");
 	}
+
+    if (options->dracoCompression) {
+        this->requireExtension("KHR_draco_mesh_compression");
+    }
 
 	// Write asset metadata
 	if (this->metadata) {
@@ -827,8 +833,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	nodes.clear();
+        nodes.clear();
+    }
 
 	// Write cameras
 	if (cameras.size() > 0) {
@@ -970,50 +976,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
 
-	// Write animations and add accessors to the accessor array
-	if (animations.size() > 0) {
-		jsonWriter->Key("animations");
-		if (options->version == "1.0") {
-			jsonWriter->StartObject();
-		}
-		else {
-			jsonWriter->StartArray();
-		}
-		for (size_t i = 0; i < animations.size(); i++) {
-			GLTF::Animation* animation = animations[i];
-			animation->id = i;
-			int numChannels = 0;
-			for (GLTF::Animation::Channel* channel : animation->channels) {
-				if (channel->target->node->id >= 0) {
-					numChannels++;
-					GLTF::Animation::Sampler* sampler = channel->sampler;
-					if (sampler->input->id < 0) {
-						sampler->input->id = accessors.size();
-						accessors.push_back(sampler->input);
-					}
-					if (sampler->output->id < 0) {
-						sampler->output->id = accessors.size();
-						accessors.push_back(sampler->output);
-					}
-				}
-			}
-			if (numChannels > 0) {
-				if (options->version == "1.0") {
-					jsonWriter->Key(animation->getStringId().c_str());
-				}
-				jsonWriter->StartObject();
-				animation->writeJSON(writer, options);
-				jsonWriter->EndObject();
-			}
-		}
-		if (options->version == "1.0") {
-			jsonWriter->EndObject();
-		}
-		else {
-			jsonWriter->EndArray();
-		}
+        meshes.clear();
 	}
 
 	// Write skins and add accessors to the accessor array
@@ -1043,47 +1007,9 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	skins.clear();
-
-	// Write accessors and add bufferViews to the bufferView array
-	if (accessors.size() > 0) {
-		jsonWriter->Key("accessors");
-		if (options->version == "1.0") {
-			jsonWriter->StartObject();
-		}
-		else {
-			jsonWriter->StartArray();
-		}
-		for (GLTF::Accessor* accessor : accessors) {
-			if (accessor->bufferView) {
-				GLTF::BufferView* bufferView = accessor->bufferView;
-				if (bufferView->id < 0) {
-					bufferView->id = bufferViews.size();
-					bufferViews.push_back(bufferView);
-				}
-			}
-			if (options->version == "1.0") {
-				jsonWriter->Key(accessor->getStringId().c_str());
-			}
-			jsonWriter->StartObject();
-			accessor->writeJSON(writer, options);
-			jsonWriter->EndObject();
-		}
-		if (options->version == "1.0") {
-			jsonWriter->EndObject();
-		}
-		else {
-			jsonWriter->EndArray();
-		}
-	}
-
-	if (options->dracoCompression) {
-		this->requireExtension("KHR_draco_mesh_compression");
-	}
-
-	meshes.clear();
-	accessors.clear();
+    
+	    skins.clear();
+    }
 
 	// Write materials and build technique and texture arrays
 	std::vector<GLTF::Technique*> techniques;
@@ -1196,8 +1122,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	materials.clear();
+        materials.clear();
+    }
 
 	// Write lights
 	if (usesMaterialsCommon && lights.size() > 0) {
@@ -1218,7 +1144,6 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 			light->writeJSON(writer, options);
 			jsonWriter->EndObject();
 		}
-		lights.clear();
 		if (options->version == "1.0") {
 			jsonWriter->EndObject();
 		}
@@ -1226,7 +1151,9 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 			jsonWriter->EndArray();
 		}
 		jsonWriter->EndObject();
-	}
+    
+	    lights.clear();
+    }
 
 	// Write textures and build sampler and image arrays
 	std::vector<GLTF::Sampler*> samplers;
@@ -1263,8 +1190,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	textures.clear();
+        textures.clear();
+    }
 
 	// Write images and add bufferViews if we have them
 	if (images.size() > 0) {
@@ -1294,8 +1221,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	images.clear();
+        images.clear();
+    }
 
 	// Write samplers
 	if (samplers.size() > 0) {
@@ -1320,8 +1247,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	samplers.clear();
+        samplers.clear();
+    }
 
 	// Write techniques and build program array
 	std::vector<GLTF::Program*> programs;
@@ -1354,8 +1281,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	techniques.clear();
+        techniques.clear();
+    }
 
 	// Write programs and build shader array
 	std::vector<GLTF::Shader*> shaders;
@@ -1391,8 +1318,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	programs.clear();
+        programs.clear();
+    }
 
 	// Write shaders
 	if (shaders.size() > 0) {
@@ -1417,8 +1344,87 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	shaders.clear();
+        shaders.clear();
+    }
+
+    // Write animations and add accessors to the accessor array
+    if (animations.size() > 0) {
+        jsonWriter->Key("animations");
+        if (options->version == "1.0") {
+            jsonWriter->StartObject();
+        }
+        else {
+            jsonWriter->StartArray();
+        }
+        for (size_t i = 0; i < animations.size(); i++) {
+            GLTF::Animation* animation = animations[i];
+            animation->id = i;
+            int numChannels = 0;
+            for (GLTF::Animation::Channel* channel : animation->channels) {
+                if (channel->target->node->id >= 0) {
+                    numChannels++;
+                    GLTF::Animation::Sampler* sampler = channel->sampler;
+                    if (sampler->input->id < 0) {
+                        sampler->input->id = accessors.size();
+                        accessors.push_back(sampler->input);
+                    }
+                    if (sampler->output->id < 0) {
+                        sampler->output->id = accessors.size();
+                        accessors.push_back(sampler->output);
+                    }
+                }
+            }
+            if (numChannels > 0) {
+                if (options->version == "1.0") {
+                    jsonWriter->Key(animation->getStringId().c_str());
+                }
+                jsonWriter->StartObject();
+                animation->writeJSON(writer, options);
+                jsonWriter->EndObject();
+            }
+        }
+        if (options->version == "1.0") {
+            jsonWriter->EndObject();
+        }
+        else {
+            jsonWriter->EndArray();
+        }
+
+        animations.clear();
+    }
+
+    // Write accessors and add bufferViews to the bufferView array
+    if (accessors.size() > 0) {
+        jsonWriter->Key("accessors");
+        if (options->version == "1.0") {
+            jsonWriter->StartObject();
+        }
+        else {
+            jsonWriter->StartArray();
+        }
+        for (GLTF::Accessor* accessor : accessors) {
+            if (accessor->bufferView) {
+                GLTF::BufferView* bufferView = accessor->bufferView;
+                if (bufferView->id < 0) {
+                    bufferView->id = bufferViews.size();
+                    bufferViews.push_back(bufferView);
+                }
+            }
+            if (options->version == "1.0") {
+                jsonWriter->Key(accessor->getStringId().c_str());
+            }
+            jsonWriter->StartObject();
+            accessor->writeJSON(writer, options);
+            jsonWriter->EndObject();
+        }
+        if (options->version == "1.0") {
+            jsonWriter->EndObject();
+        }
+        else {
+            jsonWriter->EndArray();
+        }
+        accessors.clear();
+    }
 
 	// Write bufferViews and add buffers to the buffer array
 	std::vector<GLTF::Buffer*> buffers;
@@ -1451,8 +1457,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	bufferViews.clear();
+        bufferViews.clear();
+    }
 
 	// Write buffers
 	if (buffers.size() > 0) {
@@ -1477,8 +1483,8 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		else {
 			jsonWriter->EndArray();
 		}
-	}
-	buffers.clear();
+        buffers.clear();
+    }
 
 	// Write extensionsUsed and extensionsRequired
 	if (this->extensionsRequired.size() > 0 && options->version != "1.0") {
@@ -1497,6 +1503,4 @@ void GLTF::Asset::writeJSON(void* writer, GLTF::Options* options) {
 		}
 		jsonWriter->EndArray();
 	}
-
-	GLTF::Object::writeJSON(writer, options);
 }

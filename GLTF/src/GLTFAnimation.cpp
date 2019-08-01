@@ -22,6 +22,7 @@ std::string GLTF::Animation::typeName() {
 }
 
 void GLTF::Animation::writeJSON(void* writer, GLTF::Options* options) {
+    GLTF::Object::writeJSON(writer, options);
 	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	jsonWriter->Key("channels");
@@ -112,7 +113,6 @@ void GLTF::Animation::writeJSON(void* writer, GLTF::Options* options) {
 		jsonWriter->EndArray();
 	}
 	samplers.clear();
-	GLTF::Object::writeJSON(writer, options);
 }
 
 std::string GLTF::Animation::Sampler::typeName() {
@@ -120,7 +120,8 @@ std::string GLTF::Animation::Sampler::typeName() {
 }
 
 void GLTF::Animation::Sampler::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	jsonWriter->Key("input");
 	if (options->version == "1.0") {
@@ -138,11 +139,11 @@ void GLTF::Animation::Sampler::writeJSON(void* writer, GLTF::Options* options) {
 	else {
 		jsonWriter->Int(output->id);
 	}
-	GLTF::Object::writeJSON(writer, options);
 }
 
 void GLTF::Animation::Channel::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 
 	jsonWriter->Key("sampler");
 	if (options->version == "1.0") {
@@ -155,12 +156,11 @@ void GLTF::Animation::Channel::writeJSON(void* writer, GLTF::Options* options) {
 	jsonWriter->StartObject();
 	target->writeJSON(writer, options);
 	jsonWriter->EndObject();
-
-	GLTF::Object::writeJSON(writer, options);
 }
 
 void GLTF::Animation::Channel::Target::writeJSON(void* writer, GLTF::Options* options) {
-	rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
+    GLTF::Object::writeJSON(writer, options);
+    rapidjson::Writer<rapidjson::StringBuffer>* jsonWriter = (rapidjson::Writer<rapidjson::StringBuffer>*)writer;
 	
 	if (options->version == "1.0") {
 		jsonWriter->Key("id");
@@ -172,6 +172,4 @@ void GLTF::Animation::Channel::Target::writeJSON(void* writer, GLTF::Options* op
 	}
 	jsonWriter->Key("path");
 	jsonWriter->String(pathString(path).c_str());
-
-	GLTF::Object::writeJSON(writer, options);
 }

@@ -23,6 +23,8 @@ GLTF::Object* GLTF::Primitive::clone(GLTF::Object* clone) {
 }
 
 void GLTF::Primitive::writeJSON(void* writer, Options* options) {
+    GLTF::Object::writeJSON(writer, options);
+
 	auto* jsonWriter = static_cast<rapidjson::Writer<rapidjson::StringBuffer>*>(writer);
 	jsonWriter->Key("attributes");
 	jsonWriter->StartObject();
