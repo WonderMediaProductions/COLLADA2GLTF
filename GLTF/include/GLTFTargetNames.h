@@ -9,6 +9,7 @@ namespace GLTF {
     public:
         virtual std::string typeName();
         void addName(const std::string morph);
+        size_t size();
         virtual void writeJSON(void* writer, GLTF::Options* options);
     };
 }
