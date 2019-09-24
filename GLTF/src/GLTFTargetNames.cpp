@@ -24,3 +24,8 @@ void GLTF::MorphTargetNames::addName(const std::string morph)
 {
 	morphs.emplace_back(morph);
 }
+
+size_t GLTF::MorphTargetNames::size()
+{
+    return morphs.size();
+}
