@@ -42,9 +42,7 @@ void GLTF::Object::writeJSON(void* writer, GLTF::Options* options) {
     jsonWriter->StartObject();
     for (const auto extension : this->extensions) {
       jsonWriter->Key(extension.first.c_str());
-      jsonWriter->StartObject();
       extension.second->writeJSON(writer, options);
-      jsonWriter->EndObject();
     }
     jsonWriter->EndObject();
   }
@@ -53,9 +51,7 @@ void GLTF::Object::writeJSON(void* writer, GLTF::Options* options) {
     jsonWriter->StartObject();
     for (const auto extra : this->extras) {
       jsonWriter->Key(extra.first.c_str());
-      jsonWriter->StartObject();
       extra.second->writeJSON(writer, options);
-      jsonWriter->EndObject();
     }
     jsonWriter->EndObject();
   }
